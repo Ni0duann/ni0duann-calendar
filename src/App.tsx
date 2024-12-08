@@ -1,37 +1,66 @@
-import { useState } from "react"
+import { useState } from "react";
 
 function Calendar() {
   const [date, setDate] = useState(new Date());
 
+  const daysOfMonth = (year: number, month: number): number => {
+    return new Date(year, month + 1, 0).getDate(); //date是0的话是上个月最后一天
+  };
+
+  const firstDayOfMonth = (year: number, month: number): number => {
+    return new Date(year, month, 1).getDay();
+  };
+
+  const renderDates = () => {
+    const days = [];
+
+    const daysCount = daysOfMonth(date.getFullYear(), date.getMonth());
+    const firstDay = firstDayOfMonth(date.getFullYear(), date.getMonth());
+
+    for (let i = 0; i < firstDay; i++) {
+      days.push(<div key={`empty-${i}`} className="empty"></div>);
+    }
+    for (let i = 1; i <= daysCount; i++) {
+      days.push(
+        <div key={i} className="day">
+          {i}
+        </div>
+      );
+    }
+
+    return days;
+  };
+
   const handlePrevMonth = () => {
-    setDate(new Date(date.getFullYear(),date.getMonth() -1,1))
-  }
+    setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1));
+  };
 
   const handleNextMonte = () => {
-    setDate(new Date(date.getFullYear(),date.getMonth()+1,1))
-  }
+    setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1));
+  };
 
   const monthNames = [
-    '一月',
-    '二月',
-    '三月',
-    '四月',
-    '五月',
-    '六月',
-    '七月',
-    '八月',
-    '九月',
-    '十月',
-    '十一月',
-    '十二月',
-  ]
+    "一月",
+    "二月",
+    "三月",
+    "四月",
+    "五月",
+    "六月",
+    "七月",
+    "八月",
+    "九月",
+    "十月",
+    "十一月",
+    "十二月",
+  ];
 
-
-  return(
+  return (
     <div className="calendar">
       <div className="header">
         <button onClick={handlePrevMonth}>&lt;</button>
-        <div>{date.getFullYear()}年{monthNames[date.getMonth()]}</div>
+        <div>
+          {date.getFullYear()}年{monthNames[date.getMonth()]}
+        </div>
         <button onClick={handleNextMonte}>&gt;</button>
       </div>
       <div className="days">
@@ -42,7 +71,8 @@ function Calendar() {
         <div className="day">四</div>
         <div className="day">五</div>
         <div className="day">六</div>
-        <div className="empty"></div>
+        {renderDates()}
+        {/* <div className="empty"></div>
         <div className="empty"></div>
         <div className="day">1</div>
         <div className="day">2</div>
@@ -74,10 +104,10 @@ function Calendar() {
         <div className="day">28</div>
         <div className="day">29</div>
         <div className="day">30</div>
-        <div className="day">31</div>    
+        <div className="day">31</div>     */}
       </div>
     </div>
-  )
+  );
 }
 
-export default Calendar
+export default Calendar;
