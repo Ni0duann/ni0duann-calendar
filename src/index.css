@@ -1,0 +1,29 @@
+#root{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.calendar{
+  width: 300px;
+  height: 250px;
+  border: 1px solid #aaa;
+}
+
+.header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+}
+
+.days{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.empty,.day{
+  width: calc(100% / 7);
+  text-align: center;
+  line-height: 30px;
+}
