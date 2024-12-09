@@ -1,7 +1,36 @@
-import { useState } from "react";
+import { useEffect, useImperativeHandle, useRef, useState } from "react";
+import "./index.css";
+import React from "react";
+import { useControllableValue } from "ahooks";
 
-function Calendar() {
-  const [date, setDate] = useState(new Date());
+interface CalendarProps {
+  value?: Date,
+  defaultvalue?: Date,
+  onChange?: (date: Date) => void,
+}
+
+interface CalendarRef {
+  getDate: () => Date,
+  setDate: (date: Date) => void,
+}
+
+
+const InternalCalendar: React.ForwardRefRenderFunction<CalendarRef,CalendarProps> = (props,ref) => {
+  const {value, defaultvalue = new Date(), onChange } = props;
+
+  const [date, setDate] = useControllableValue(props,{defaultValue: new Date()});
+
+  useImperativeHandle(ref,() => {
+    return {
+      getDate() {
+        return date;
+      },
+      setDate(date: Date) {
+        setDate(date);
+      }
+    }
+  })
+  
 
   const daysOfMonth = (year: number, month: number): number => {
     return new Date(year, month + 1, 0).getDate(); //date是0的话是上个月最后一天
@@ -21,11 +50,23 @@ function Calendar() {
       days.push(<div key={`empty-${i}`} className="empty"></div>);
     }
     for (let i = 1; i <= daysCount; i++) {
-      days.push(
-        <div key={i} className="day">
-          {i}
-        </div>
-      );
+      const clickHandler = () => {
+        const curDate = new Date(date.getFullYear(),date.getMonth(),i);
+        setDate(curDate);
+      }
+      if (i === date.getDate()) {
+        days.push(
+          <div key={i} className="day selected" onClick={() => clickHandler()}>
+            {i}
+          </div>
+        );
+      } else {
+        days.push(
+          <div key={i} className="day" onClick={() => clickHandler()}>
+            {i}
+          </div>
+        );
+      }
     }
 
     return days;
@@ -72,42 +113,32 @@ function Calendar() {
         <div className="day">五</div>
         <div className="day">六</div>
         {renderDates()}
-        {/* <div className="empty"></div>
-        <div className="empty"></div>
-        <div className="day">1</div>
-        <div className="day">2</div>
-        <div className="day">3</div>
-        <div className="day">4</div>
-        <div className="day">5</div>
-        <div className="day">6</div>
-        <div className="day">7</div>
-        <div className="day">8</div>
-        <div className="day">9</div>
-        <div className="day">10</div>
-        <div className="day">11</div>
-        <div className="day">12</div>
-        <div className="day">13</div>
-        <div className="day">14</div>
-        <div className="day">15</div>
-        <div className="day">16</div>
-        <div className="day">17</div>
-        <div className="day">18</div>
-        <div className="day">19</div>
-        <div className="day">20</div>
-        <div className="day">21</div>
-        <div className="day">22</div>
-        <div className="day">23</div>
-        <div className="day">24</div>
-        <div className="day">25</div>
-        <div className="day">26</div>
-        <div className="day">27</div>
-        <div className="day">28</div>
-        <div className="day">29</div>
-        <div className="day">30</div>
-        <div className="day">31</div>     */}
       </div>
+    </div>
+  );
+};
+
+const Calendar = React.forwardRef(InternalCalendar);
+
+function Test() {
+  const [date,setDate] = useState(new Date())
+  const calendarRef = useRef<CalendarRef>(null);
+
+  useEffect(()=> {
+    
+
+    setTimeout(()=> {
+      calendarRef.current?.setDate(new Date("2024-12-15"))
+      console.log(calendarRef.current?.getDate());
+    },5000)
+    
+  })
+  return (
+    <div>
+      <Calendar value={new Date("2024-12-13")} onChange={(date) => {setDate(date);alert(date.toLocaleDateString())}}></Calendar>
+      <Calendar defaultvalue={new Date("2024-12-10")} ref={calendarRef}></Calendar>
     </div>
   );
 }
 
-export default Calendar;
+export default Test;
