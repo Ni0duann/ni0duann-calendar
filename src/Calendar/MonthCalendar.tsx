@@ -7,6 +7,7 @@ import cs from "classnames";
 
 interface MonthCalendarProps extends CalendarProps {
   selectHandler?: (date: Dayjs) => void;
+  curMonth: Dayjs;
 }
 
 function getAllDays(date: Dayjs) {
@@ -34,13 +35,30 @@ function getAllDays(date: Dayjs) {
   return daysInfo;
 }
 
-//渲染
+
+
+function MonthCalendar(props: MonthCalendarProps) {
+  const localeContext = useContext(LocaleContext);
+
+  const { dateRender, dateInnerContent, value, selectHandler,curMonth } = props;
+
+  const CalendarLocale = allLocales[localeContext.locale];
+
+  const weekList = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+
+  const allDays = getAllDays(curMonth);
+
+  //渲染
 function renderDays(
-  days: Array<{ date: Dayjs; currentMonth: boolean }>,
-  dateRender: MonthCalendarProps["dateRender"],
-  dateInnerContent: MonthCalendarProps["dateInnerContent"],
-  value: Dayjs,
-  selectHandler: MonthCalendarProps['selectHandler'],
+  days: Array<{ date: Dayjs; currentMonth: boolean }>
 ) {
   const rows = [];
   for (let i = 0; i < 6; i++) {
@@ -66,7 +84,7 @@ function renderDays(
               <div
                 className={cs(
                   "calendar-month-cell-body-date-value",
-                  value.format("YYYY-MM-DD") === item.date.format("YYYY-MM-DD")
+                  value?.format("YYYY-MM-DD") === item.date.format("YYYY-MM-DD")
                     ? "calendar-month-body-cell-date-selected"
                     : ""
                 )}
@@ -88,25 +106,6 @@ function renderDays(
   ));
 }
 
-function MonthCalendar(props: MonthCalendarProps) {
-  const localeContext = useContext(LocaleContext);
-
-  const { dateRender, dateInnerContent, value, selectHandler,curMonth } = props;
-
-  const CalendarLocale = allLocales[localeContext.locale];
-
-  const weekList = [
-    "sunday",
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-  ];
-
-  const allDays = getAllDays(curMonth);
-
   return (
     <div className="calendar-month-list">
       <div className="calendar-month-week-list">
@@ -117,7 +116,7 @@ function MonthCalendar(props: MonthCalendarProps) {
         ))}
       </div>
       <div className="calendar-month-body">
-        {renderDays(allDays, dateRender, dateInnerContent, value,selectHandler)}
+        {renderDays(allDays)}
       </div>
     </div>
   );
